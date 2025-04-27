@@ -19,3 +19,13 @@ D:\cis\third year\second term\Algo\[TEMPLATE] ImageSegmentation\[TEMPLATE] Image
 D:\cis\third year\second term\Algo\[TEMPLATE] ImageSegmentation\[TEMPLATE] ImageSegmentation\ImageSegmentation\obj\Debug\ImageTemplate.Properties.Resources.resources
 D:\cis\third year\second term\Algo\[TEMPLATE] ImageSegmentation\[TEMPLATE] ImageSegmentation\ImageSegmentation\obj\Debug\ImageSegmentation.csproj.GenerateResource.cache
 D:\cis\third year\second term\Algo\[TEMPLATE] ImageSegmentation\[TEMPLATE] ImageSegmentation\ImageSegmentation\obj\Debug\ImageSegmentation.csproj.CoreCompileInputs.cache
+D:\cis\third year\second term\Algo\[TEMPLATE] ImageSegmentation\ImageSegmentation\ImageSegmentation\bin\Debug\ImageTemplate.exe.config
+D:\cis\third year\second term\Algo\[TEMPLATE] ImageSegmentation\ImageSegmentation\ImageSegmentation\bin\Debug\ImageTemplate.exe
+D:\cis\third year\second term\Algo\[TEMPLATE] ImageSegmentation\ImageSegmentation\ImageSegmentation\bin\Debug\ImageTemplate.pdb
+D:\cis\third year\second term\Algo\[TEMPLATE] ImageSegmentation\ImageSegmentation\ImageSegmentation\obj\Debug\ImageSegmentation.csproj.AssemblyReference.cache
+D:\cis\third year\second term\Algo\[TEMPLATE] ImageSegmentation\ImageSegmentation\ImageSegmentation\obj\Debug\ImageTemplate.MainForm.resources
+D:\cis\third year\second term\Algo\[TEMPLATE] ImageSegmentation\ImageSegmentation\ImageSegmentation\obj\Debug\ImageTemplate.Properties.Resources.resources
+D:\cis\third year\second term\Algo\[TEMPLATE] ImageSegmentation\ImageSegmentation\ImageSegmentation\obj\Debug\ImageSegmentation.csproj.GenerateResource.cache
+D:\cis\third year\second term\Algo\[TEMPLATE] ImageSegmentation\ImageSegmentation\ImageSegmentation\obj\Debug\ImageSegmentation.csproj.CoreCompileInputs.cache
+D:\cis\third year\second term\Algo\[TEMPLATE] ImageSegmentation\ImageSegmentation\ImageSegmentation\obj\Debug\ImageTemplate.exe
+D:\cis\third year\second term\Algo\[TEMPLATE] ImageSegmentation\ImageSegmentation\ImageSegmentation\obj\Debug\ImageTemplate.pdb
