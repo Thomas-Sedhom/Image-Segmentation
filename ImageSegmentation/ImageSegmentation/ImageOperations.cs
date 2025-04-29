@@ -26,12 +26,14 @@ namespace ImageTemplate
     {
         public int x, y;
         public List<KeyValuePair<Node, int>> children;
+        private int segmant;
 
         public Node(int x, int y)
         {
             this.x = x;
             this.y = y;
             children = new List<KeyValuePair<Node, int>>();
+            segmant = -1;
         }
     }
 
@@ -298,14 +300,28 @@ namespace ImageTemplate
                     }
                 }
             }
-
             return graph;
         }
-        public static RGBPixel[,] ImageSegmentation(RGBPixel[,] ImageMatrix, string color)
+        public static Node[,] ImageSegmentation(Node[,] graph, string color)
         {
             List<KeyValuePair<int, KeyValuePair<Node, Node>>> nodes = new List<KeyValuePair<int, KeyValuePair<Node, Node>>>();
-            return ImageMatrix;
+            for (int i = 0; i < graph.GetLength(0); i++)
+            {
+                for (int j = 0; j < graph.GetLength(1); j++)
+                {
+                    foreach (KeyValuePair<Node, int> child in graph[i, j].children)
+                    {
+                        nodes.Add(
+                            new KeyValuePair<int, KeyValuePair<Node, Node>>(
+                                child.Value,
+                                new KeyValuePair<Node, Node>(child.Key, graph[i, j])
+                            )
+                        );                    }
+                } 
+            }
+            nodes.Sort((a, b) => a.Key.CompareTo(b.Key));
+            
+            return graph;
         }
     }
-
 }
