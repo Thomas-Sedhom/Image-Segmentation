@@ -1,0 +1,55 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# DB Secrets
+db.config
+
+# Mono Auto Generated Files
+mono_crash.*
+
+# Visual Studio folder settings
+.vs/
+
+# Debug & release folders
+Debug/
+Release/
+
+# NuGet packages
+*.nupkg
+packages/
+*.snupkg
+project.lock.json
+project.assets.json
+
+# Resharper files
+*.DotSettings.user
+
+# Windows image cache
+Thumbs.db
+Desktop.ini
+
+# JetBrains Rider
+.idea/
+
+# Backup & temporary files
+*.bak
+*.tmp
+*.log
+
+# VS Code settings (if using)
+.vscode/
+
+# IIS Express
+.vsconfig
+*.vspscc
+*.vssscc
+
+# Others
+TestResults/
