@@ -38,7 +38,7 @@ namespace ImageTemplate
             int maskSize = (int)nudMaskSize.Value ;
             ImageMatrix = ImageOperations.GaussianFilter1D(ImageMatrix, maskSize, sigma);
             Node[,] graph = Segmentation.GraphConstruct(ImageMatrix, "red");
-            Node[,] sortedNodes = Segmentation.ImageSegmentation(graph, "red");
+            DisjointSet sortedNodes = Segmentation.ImageSegmentation(graph);
             ImageOperations.DisplayImage(ImageMatrix, pictureBox2);
         }
 

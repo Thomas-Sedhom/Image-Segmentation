@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace ImageTemplate
 {
@@ -71,7 +73,7 @@ namespace ImageTemplate
             }
             return graph;
         }
-        public static Node[,] ImageSegmentation(Node[,] graph, string color)
+        public static DisjointSet ImageSegmentation(Node[,] graph)
         {
             List<KeyValuePair<int, KeyValuePair<Node, Node>>> nodes = new List<KeyValuePair<int, KeyValuePair<Node, Node>>>();
             for (int i = 0; i < graph.GetLength(0); i++)
@@ -95,10 +97,36 @@ namespace ImageTemplate
             foreach (KeyValuePair<int, KeyValuePair<Node, Node>> child in nodes)
             {
                 dsu.Union(child.Value.Key.id, child.Value.Value.id, child.Key);
-
-
             }
-            return graph;
+            return dsu;
+        }
+        
+        private void ImageProcess(RGBPixel[,] ImageMatrix)
+        {
+            Node[,] graphRed = GraphConstruct(ImageMatrix, "red");
+            Node[,] graphGreen = GraphConstruct(ImageMatrix, "green");
+            Node[,] graphBlue = GraphConstruct(ImageMatrix, "blue");
+
+            DisjointSet resRed = ImageSegmentation(graphRed);
+            DisjointSet resBlue = ImageSegmentation(graphBlue);
+            DisjointSet resGreen= ImageSegmentation(graphGreen);
+
+            for (int i = 0; i < graphRed.GetLength(0); i++)
+            {
+                for (int j = 0; j < graphRed.GetLength(1); j++)
+                {
+                    bool isRedEqualBlue = (resRed.Find(graphRed[i, j].id) == resBlue.Find(graphBlue[i, j].id));
+                    bool isRedEqualGreen = (resRed.Find(graphRed[i, j].id) == resGreen.Find(graphGreen[i, j].id));
+                    if (!(isRedEqualBlue&&isRedEqualGreen))
+                    {
+                        //ne2smhom
+                    }
+                   
+                }
+            }
+
+
+            return;
         }
     }
 }
