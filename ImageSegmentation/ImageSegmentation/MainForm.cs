@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace ImageTemplate
 {
@@ -36,6 +37,8 @@ namespace ImageTemplate
             double sigma = double.Parse(txtGaussSigma.Text);
             int maskSize = (int)nudMaskSize.Value ;
             ImageMatrix = ImageOperations.GaussianFilter1D(ImageMatrix, maskSize, sigma);
+            Node[,] graph = Segmentation.GraphConstruct(ImageMatrix, "red");
+            Node[,] sortedNodes = Segmentation.ImageSegmentation(graph, "red");
             ImageOperations.DisplayImage(ImageMatrix, pictureBox2);
         }
 

@@ -7,27 +7,22 @@ using System.Threading.Tasks;
 namespace ImageTemplate
 {
 
-
-    public struct Node
+    public class Node
     {
+        public int id;
         public int x, y;
         public List<KeyValuePair<Node, int>> children;
         private int component;
 
-        public Node(int x, int y)
+        public Node(int id, int x, int y)
         {
+            this.id = id;
             this.x = x;
             this.y = y;
+
             children = new List<KeyValuePair<Node, int>>();
             component = -1;
         }
-
-    }
-    public struct Component
-    {
-        // Nodes in a single Component
-        public List<Node> nodes;
-        public int maxInternalDifference;
 
     }
 
@@ -37,14 +32,14 @@ namespace ImageTemplate
 
         public static Node[,] GraphConstruct(RGBPixel[,] ImageMatrix, string color)
         {
-            RGBPixel[,] filteredImageMatrix = ImageOperations.GaussianFilter1D(ImageMatrix, 4, 0.8);
             Node[,] graph = new Node[ImageMatrix.GetLength(0), ImageMatrix.GetLength(1)];
 
-            for (int i = 0; i < filteredImageMatrix.GetLength(0); i++)
+            int uuid = 0;
+            for (int i = 0; i < ImageMatrix.GetLength(0); i++)
             {
-                for (int j = 0; j < filteredImageMatrix.GetLength(1); j++)
+                for (int j = 0; j < ImageMatrix.GetLength(1); j++)
                 {
-                    graph[i, j] = new Node(i, j);
+                    graph[i, j] = new Node(uuid++, i, j);
                 }
             }
 
@@ -64,11 +59,11 @@ namespace ImageTemplate
                         {
                             int weight;
                             if (color == "red")
-                                weight = Math.Abs(filteredImageMatrix[i, j].red - filteredImageMatrix[x, y].red);
+                                weight = Math.Abs(ImageMatrix[i, j].red - ImageMatrix[x, y].red);
                             else if (color == "green")
-                                weight = Math.Abs(filteredImageMatrix[i, j].green - filteredImageMatrix[x, y].green);
+                                weight = Math.Abs(ImageMatrix[i, j].green - ImageMatrix[x, y].green);
                             else
-                                weight = Math.Abs(filteredImageMatrix[i, j].blue - filteredImageMatrix[x, y].blue);
+                                weight = Math.Abs(ImageMatrix[i, j].blue - ImageMatrix[x, y].blue);
                             graph[i, j].children.Add(new KeyValuePair<Node, int>(graph[x, y], weight));
                         }
                     }
@@ -96,13 +91,14 @@ namespace ImageTemplate
             }
             nodes.Sort((a, b) => a.Key.CompareTo(b.Key));
 
+            DisjointSet dsu = new DisjointSet(graph.GetLength(0) * graph.GetLength(1));
+            foreach (KeyValuePair<int, KeyValuePair<Node, Node>> child in nodes)
+            {
+                dsu.Union(child.Value.Key.id, child.Value.Value.id, child.Key);
+
+
+            }
             return graph;
-        }
-
-        public static int MaxInternalDifference(Node[,] component)
-        {
-
-            return -1;
         }
     }
 }
