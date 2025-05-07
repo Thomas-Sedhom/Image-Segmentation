@@ -100,8 +100,17 @@ namespace ImageTemplate
             }
             return dsu;
         }
-        
-        private void ImageProcess(RGBPixel[,] ImageMatrix)
+        public static RGBPixel GetColorForSegment(int id)
+        {
+            Random rand = new Random(id);
+            return new RGBPixel
+            {
+                red = (byte)rand.Next(256),
+                green = (byte)rand.Next(256),
+                blue = (byte)rand.Next(256)
+            };
+        }
+        public static void ImageProcess(ref RGBPixel[,] ImageMatrix)
         {
             Node[,] graphRed = GraphConstruct(ImageMatrix, "red");
             Node[,] graphGreen = GraphConstruct(ImageMatrix, "green");
@@ -109,25 +118,33 @@ namespace ImageTemplate
 
             DisjointSet resRed = ImageSegmentation(graphRed);
             DisjointSet resBlue = ImageSegmentation(graphBlue);
-            DisjointSet resGreen= ImageSegmentation(graphGreen);
+            DisjointSet resGreen = ImageSegmentation(graphGreen);
+
 
             for (int i = 0; i < graphRed.GetLength(0); i++)
             {
                 for (int j = 0; j < graphRed.GetLength(1); j++)
                 {
-                    bool isRedEqualBlue = (resRed.Find(graphRed[i, j].id) == resBlue.Find(graphBlue[i, j].id));
-                    bool isRedEqualGreen = (resRed.Find(graphRed[i, j].id) == resGreen.Find(graphGreen[i, j].id));
-                    if (!(isRedEqualBlue&&isRedEqualGreen))
+                    int idRed = resRed.Find(graphRed[i, j].id);
+                    int idGreen = resGreen.Find(graphGreen[i, j].id);
+                    int idBlue = resBlue.Find(graphBlue[i, j].id);
+
+                    bool isRedEqualGreen = (idRed == idGreen);
+                    bool isRedEqualBlue = (idRed == idBlue);
+                    if (!(isRedEqualBlue && isRedEqualGreen))
                     {
-                        //ne2smhom
+                        ImageMatrix[i, j] = new RGBPixel { red = 0, green = 0, blue = 0 };
                     }
-                   
+                    else
+                    {
+                        ImageMatrix[i, j] = GetColorForSegment(idRed);
+                    }
                 }
             }
 
-
             return;
         }
+
     }
 }
 

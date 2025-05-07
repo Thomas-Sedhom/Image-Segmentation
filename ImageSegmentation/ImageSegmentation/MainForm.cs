@@ -39,9 +39,10 @@ namespace ImageTemplate
             ImageMatrix = ImageOperations.GaussianFilter1D(ImageMatrix, maskSize, sigma);
             Node[,] graph = Segmentation.GraphConstruct(ImageMatrix, "red");
             DisjointSet sortedNodes = Segmentation.ImageSegmentation(graph);
+            Segmentation.ImageProcess(ref ImageMatrix);
             ImageOperations.DisplayImage(ImageMatrix, pictureBox2);
         }
-
+        
         private void MainForm_Load(object sender, EventArgs e)
         {
 
