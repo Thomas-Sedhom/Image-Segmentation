@@ -30,8 +30,6 @@ namespace ImageTemplate
 
     internal class Segmentation
     {
-
-
         public static Node[,] GraphConstruct(RGBPixel[,] ImageMatrix, string color)
         {
             Node[,] graph = new Node[ImageMatrix.GetLength(0), ImageMatrix.GetLength(1)];
@@ -120,6 +118,12 @@ namespace ImageTemplate
             DisjointSet resBlue = ImageSegmentation(graphBlue);
             DisjointSet resGreen = ImageSegmentation(graphGreen);
 
+            Console.WriteLine("Number of Components: " + resRed.uniqueComponents.Count);
+            Console.WriteLine("Red Segments: " + resRed.uniqueComponents.Count);
+            Console.WriteLine("Green Segments: " + resGreen.uniqueComponents.Count);
+            Console.WriteLine("Blue Segments: " + resBlue.uniqueComponents.Count);
+            //Console.WriteLine("Size: " + size[c1]);
+            //Console.WriteLine("Size: " + size[c2]);
 
             for (int i = 0; i < graphRed.GetLength(0); i++)
             {
@@ -129,16 +133,16 @@ namespace ImageTemplate
                     int idGreen = resGreen.Find(graphGreen[i, j].id);
                     int idBlue = resBlue.Find(graphBlue[i, j].id);
 
-                    bool isRedEqualGreen = (idRed == idGreen);
-                    bool isRedEqualBlue = (idRed == idBlue);
-                    if (!(isRedEqualBlue && isRedEqualGreen))
-                    {
-                        ImageMatrix[i, j] = new RGBPixel { red = 0, green = 0, blue = 0 };
-                    }
-                    else
-                    {
-                        ImageMatrix[i, j] = GetColorForSegment(idRed);
-                    }
+                    //bool isRedEqualGreen = (idRed == idGreen);
+                    //bool isRedEqualBlue = (idRed == idBlue);
+                    //if (idRed != idGreen || idRed != idBlue)
+                    //{
+                    //    ImageMatrix[i, j] = new RGBPixel { red = 0, green = 0, blue = 0 }; // Not in same component across all channels
+                    //}
+                    //else
+                    //{
+                    //}
+                        ImageMatrix[i, j] = GetColorForSegment(idRed); // All labels match — valid region
                 }
             }
 
