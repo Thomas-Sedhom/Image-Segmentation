@@ -36,9 +36,9 @@ namespace ImageTemplate
         {
             double sigma = double.Parse(txtGaussSigma.Text);
             int maskSize = (int)nudMaskSize.Value ;
-            ImageMatrix = ImageOperations.GaussianFilter1D(ImageMatrix, maskSize, sigma);
-            Node[,] graph = Segmentation.GraphConstruct(ImageMatrix, "red");
-            DisjointSet sortedNodes = Segmentation.ImageSegmentation(graph);
+            // ImageMatrix = ImageOperations.GaussianFilter1D(ImageMatrix, maskSize, sigma);
+            // Node[,] graph = Segmentation.GraphConstruct(ImageMatrix, "red");
+            // DisjointSet sortedNodes = Segmentation.ImageSegmentation(graph);
             Segmentation.ImageProcess(ref ImageMatrix);
             ImageOperations.DisplayImage(ImageMatrix, pictureBox2);
         }

@@ -2,6 +2,7 @@
 <project version="4">
   <component name="UserContentModel">
     <attachedFolders>
+      <Path>../../Image-Segmentation</Path>
       <Path>../../[TEMPLATE] ImageSegmentation</Path>
     </attachedFolders>
     <explicitIncludes />

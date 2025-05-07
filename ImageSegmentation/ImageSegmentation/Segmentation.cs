@@ -64,6 +64,8 @@ namespace ImageTemplate
                                 weight = Math.Abs(ImageMatrix[i, j].green - ImageMatrix[x, y].green);
                             else
                                 weight = Math.Abs(ImageMatrix[i, j].blue - ImageMatrix[x, y].blue);
+                            if(weight > 0)
+                                Console.WriteLine( " x: " + x + " y: "+ y + "  i: " + i + " j: " + j + " weight " + weight);
                             graph[i, j].children.Add(new KeyValuePair<Node, int>(graph[x, y], weight));
                         }
                     }
@@ -118,7 +120,7 @@ namespace ImageTemplate
             DisjointSet resBlue = ImageSegmentation(graphBlue);
             DisjointSet resGreen = ImageSegmentation(graphGreen);
 
-            Console.WriteLine("Number of Components: " + resRed.uniqueComponents.Count);
+            // Console.WriteLine("Number of Components: " + resRed.uniqueComponents.Count);
             Console.WriteLine("Red Segments: " + resRed.uniqueComponents.Count);
             Console.WriteLine("Green Segments: " + resGreen.uniqueComponents.Count);
             Console.WriteLine("Blue Segments: " + resBlue.uniqueComponents.Count);
@@ -133,16 +135,17 @@ namespace ImageTemplate
                     int idGreen = resGreen.Find(graphGreen[i, j].id);
                     int idBlue = resBlue.Find(graphBlue[i, j].id);
 
-                    //bool isRedEqualGreen = (idRed == idGreen);
-                    //bool isRedEqualBlue = (idRed == idBlue);
-                    //if (idRed != idGreen || idRed != idBlue)
-                    //{
-                    //    ImageMatrix[i, j] = new RGBPixel { red = 0, green = 0, blue = 0 }; // Not in same component across all channels
-                    //}
-                    //else
-                    //{
-                    //}
+                    // bool isRedEqualGreen = (idRed == idGreen);
+                    // bool isRedEqualBlue = (idRed == idBlue);
+                    if (idRed != idGreen || idRed != idBlue) 
+                    {
+                        ImageMatrix[i, j] = new RGBPixel { red = 0, green = 0, blue = 0 }; // Not in same component across all channels
+                    }
+                    else
+                    {
                         ImageMatrix[i, j] = GetColorForSegment(idRed); // All labels match — valid region
+
+                    }
                 }
             }
 

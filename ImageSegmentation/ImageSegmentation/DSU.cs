@@ -97,7 +97,7 @@ namespace ImageTemplate
                     Math.Max(InternalDifference[c1], InternalDifference[c2])
                 );
 
-                Console.WriteLine($"Merged: {c1} & {c2} → Parent: {newParent} | Size: {size[newParent]} | InternalDiff: {InternalDifference[newParent]}");
+                // Console.WriteLine($"Merged: {c1} & {c2} → Parent: {newParent} | Size: {size[newParent]} | InternalDiff: {InternalDifference[newParent]}");
             }
         }
 
