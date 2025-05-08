@@ -1,20 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace ImageTemplate
 {
+
+/* 
+ * Component = Sub-Graph
+ * 
+ * Int = Smallest Cost in a Component
+ * 
+ * Smallest difference between any node from a component and another node in the second component
+ * 
+ * MInt(C1, C2) = min(Int(C1) + ThreshC1, Int(C2) + ThreshC2)
+ * 
+ * Thresh = K / (Number of Vertices in a component)
+ * 
+ * D = true: Sufficient evidence of a real boundary ->  keep regions separate.
+ * D = false: Boundary not strong enough ->  regions may be merged.
+ */
 
     public class Node
     {
         public int id;
         public int x, y;
         public List<KeyValuePair<Node, int>> children;
-        private int component;
 
         public Node(int id, int x, int y)
         {
@@ -23,9 +36,7 @@ namespace ImageTemplate
             this.y = y;
 
             children = new List<KeyValuePair<Node, int>>();
-            component = -1;
         }
-
     }
 
     internal class Segmentation
@@ -64,8 +75,8 @@ namespace ImageTemplate
                                 weight = Math.Abs(ImageMatrix[i, j].green - ImageMatrix[x, y].green);
                             else
                                 weight = Math.Abs(ImageMatrix[i, j].blue - ImageMatrix[x, y].blue);
-                            if(weight > 0)
-                                Console.WriteLine( " x: " + x + " y: "+ y + "  i: " + i + " j: " + j + " weight " + weight);
+                            //if (weight > 0)
+                            //    Console.WriteLine(" x: " + x + " y: " + y + "  i: " + i + " j: " + j + " weight " + weight);
                             graph[i, j].children.Add(new KeyValuePair<Node, int>(graph[x, y], weight));
                         }
                     }
@@ -110,65 +121,61 @@ namespace ImageTemplate
                 blue = (byte)rand.Next(256)
             };
         }
-        public static void ImageProcess(ref RGBPixel[,] ImageMatrix)
+        public static void ImageProcess(ref RGBPixel[,] imageMatrix)
         {
-            Node[,] graphRed = GraphConstruct(ImageMatrix, "red");
-            Node[,] graphGreen = GraphConstruct(ImageMatrix, "green");
-            Node[,] graphBlue = GraphConstruct(ImageMatrix, "blue");
+            // Graphs for each color
+            Node[,] graphRed = GraphConstruct(imageMatrix, "red");
+            Node[,] graphGreen = GraphConstruct(imageMatrix, "green");
+            Node[,] graphBlue = GraphConstruct(imageMatrix, "blue");
 
-            DisjointSet resRed = ImageSegmentation(graphRed);
-            DisjointSet resBlue = ImageSegmentation(graphBlue);
-            DisjointSet resGreen = ImageSegmentation(graphGreen);
+            // Segment the image for each color
+            DisjointSet redSegments = ImageSegmentation(graphRed);
+            DisjointSet greenSegments = ImageSegmentation(graphGreen);
+            DisjointSet blueSegments = ImageSegmentation(graphBlue);
 
-            // Console.WriteLine("Number of Components: " + resRed.uniqueComponents.Count);
-            Console.WriteLine("Red Segments: " + resRed.uniqueComponents.Count);
-            Console.WriteLine("Green Segments: " + resGreen.uniqueComponents.Count);
-            Console.WriteLine("Blue Segments: " + resBlue.uniqueComponents.Count);
-            //Console.WriteLine("Size: " + size[c1]);
-            //Console.WriteLine("Size: " + size[c2]);
+            LogSegmentInfo("Red", redSegments);
+            LogSegmentInfo("Green", greenSegments);
+            LogSegmentInfo("Blue", blueSegments);
 
-            for (int i = 0; i < graphRed.GetLength(0); i++)
+            // Intersect the 3 label maps
+            var segmentColorsMap = new Dictionary<(int, int, int), RGBPixel>();
+
+            int height = imageMatrix.GetLength(0);
+            int width = imageMatrix.GetLength(1);
+
+            for (int i = 0; i < height; i++)
             {
-                for (int j = 0; j < graphRed.GetLength(1); j++)
+                for (int j = 0; j < width; j++)
                 {
-                    int idRed = resRed.Find(graphRed[i, j].id);
-                    int idGreen = resGreen.Find(graphGreen[i, j].id);
-                    int idBlue = resBlue.Find(graphBlue[i, j].id);
+                    int redId = redSegments.Find(graphRed[i, j].id);
+                    int greenId = greenSegments.Find(graphGreen[i, j].id);
+                    int blueId = blueSegments.Find(graphBlue[i, j].id);
 
-                    // bool isRedEqualGreen = (idRed == idGreen);
-                    // bool isRedEqualBlue = (idRed == idBlue);
-                    if (idRed != idGreen || idRed != idBlue) 
-                    {
-                        ImageMatrix[i, j] = new RGBPixel { red = 0, green = 0, blue = 0 }; // Not in same component across all channels
-                    }
-                    else
-                    {
-                        ImageMatrix[i, j] = GetColorForSegment(idRed); // All labels match — valid region
+                    var combinedId = (redId, greenId, blueId);
 
-                    }
+                    if (!segmentColorsMap.ContainsKey(combinedId))
+                        segmentColorsMap[combinedId] = GetColorForSegment(segmentColorsMap.Count);
+
+                    imageMatrix[i, j] = segmentColorsMap[combinedId];
                 }
             }
+        }
 
-            return;
+        private static void LogSegmentInfo(string color, DisjointSet segments)
+        {
+            Console.WriteLine($"{color} Segments: {segments.uniqueComponents.Count}");
+            foreach (var component in segments.uniqueComponents)
+            {
+                Console.WriteLine($"  Size: {segments.size[component]}");
+            }
         }
 
     }
+    // bool isRedEqualGreen = (idRed == idGreen);
+    // bool isRedEqualBlue = (idRed == idBlue);
+    //if (idRed != idGreen || idRed != idBlue) 
+    //{
+    //    ImageMatrix[i, j] = new RGBPixel { red = 0, green = 0, blue = 0 };
+    //}
+
 }
-
-
-
-/*
- * 
- * Component = Sub-Graph
- * 
- * Int = Smallest Cost in a Component
- * 
- * Smallest difference between any node from a component and another node in the second component
- * 
- * MInt(C1, C2) = min(Int(C1) + ThreshC1, Int(C2) + ThreshC2)
- * 
- * Thresh = K / (Number of Vertices in a component)
- * 
- * D = true: Sufficient evidence of a real boundary ->  keep regions separate.
- * D = false: Boundary not strong enough ->  regions may be merged.
- */

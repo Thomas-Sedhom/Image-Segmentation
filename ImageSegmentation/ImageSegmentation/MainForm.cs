@@ -34,18 +34,30 @@ namespace ImageTemplate
 
         private void btnGaussSmooth_Click(object sender, EventArgs e)
         {
-            double sigma = double.Parse(txtGaussSigma.Text);
-            int maskSize = (int)nudMaskSize.Value ;
-            // ImageMatrix = ImageOperations.GaussianFilter1D(ImageMatrix, maskSize, sigma);
-            // Node[,] graph = Segmentation.GraphConstruct(ImageMatrix, "red");
-            // DisjointSet sortedNodes = Segmentation.ImageSegmentation(graph);
+            if (DoGaussianFilter.Checked)
+            {
+                double sigma = double.Parse(txtGaussSigma.Text);
+                int maskSize = (int)nudMaskSize.Value;
+                ImageMatrix = ImageOperations.GaussianFilter1D(ImageMatrix, maskSize, sigma);
+            }
             Segmentation.ImageProcess(ref ImageMatrix);
             ImageOperations.DisplayImage(ImageMatrix, pictureBox2);
         }
-        
+
         private void MainForm_Load(object sender, EventArgs e)
         {
+            DoGaussianFilter.Checked = true;
+        }
 
+        private void DoGaussianFilter_CheckedChanged(object sender, EventArgs e)
+        {
+
+            if (DoGaussianFilter.Checked)
+            {
+                Gauss_Settings_Panel.Show();
+            }
+            else
+                Gauss_Settings_Panel.Hide();
         }
     }
 }

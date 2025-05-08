@@ -7,7 +7,6 @@ namespace ImageTemplate
 
     public class DisjointSet
     {
-        private readonly int K_CONSTANT = 1;
 
         // We first assume that each component is a single node
 
@@ -20,11 +19,17 @@ namespace ImageTemplate
          * else do nothing.
          * 
          */
+        private readonly int K_CONSTANT = 1;
+
+        // DEBUGGING: Find how many components are found in the current state
         public HashSet<int> uniqueComponents;
+
+        // rank is incremented by 1 when Merging to state which component is dominant in upcoming merging.
         private int[] parent, rank;
 
+        // Size of each component
+        public int[] size;
         // Storing the max internal difference of each component
-        private int[] size;
         private int[] InternalDifference;
 
 
@@ -35,7 +40,6 @@ namespace ImageTemplate
 
             rank = new int[n];
 
-            // Size of each component, difference between size and rank is that rank is incremented by 1 when Merging
             size = new int[n];
             InternalDifference = new int[n];
 
@@ -50,6 +54,7 @@ namespace ImageTemplate
                 InternalDifference[i] = 0;
             }
         }
+           
 
         public int Find(int i)
         {
@@ -64,7 +69,7 @@ namespace ImageTemplate
         {
             int c1 = Find(x);
             int c2 = Find(y);
-            if (c1 != c2 && canUnion(c1, c2, weight))
+            if (c1 != c2 && CanUnion(c1, c2, weight))
             {
                 int newParent;
                 if (rank[c1] < rank[c2])
@@ -101,14 +106,14 @@ namespace ImageTemplate
             }
         }
 
-        private bool canUnion(int c1, int c2, int weight)
+        private bool CanUnion(int c1, int c2, int weight)
         {
-            if (weight > getMinDifference(c1, c2, K_CONSTANT))
+            if (weight > GetMinDifference(c1, c2, K_CONSTANT))
                 return false;
             return true;
         }
 
-        private double getMinDifference(int c1, int c2, int K)
+        private double GetMinDifference(int c1, int c2, int K)
         {
             double T_c1 = K / size[c1];
             double T_c2 = K / size[c2];
