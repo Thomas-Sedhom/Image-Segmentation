@@ -19,7 +19,7 @@ namespace ImageTemplate
          * else do nothing.
          * 
          */
-        private readonly int K_CONSTANT = 1;
+        private readonly int K_CONSTANT = 500;
 
         // DEBUGGING: Find how many components are found in the current state
         public HashSet<int> uniqueComponents;
@@ -56,6 +56,7 @@ namespace ImageTemplate
         }
            
 
+        // O(log(M))
         public int Find(int i)
         {
             if (parent[i] != i)
@@ -64,7 +65,7 @@ namespace ImageTemplate
             }
             return parent[i];
         }
-
+        // O(log(M))
         public void Union(int x, int y, int weight)
         {
             int c1 = Find(x);

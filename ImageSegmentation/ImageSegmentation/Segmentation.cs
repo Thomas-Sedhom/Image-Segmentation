@@ -8,20 +8,34 @@ using System.Threading.Tasks;
 namespace ImageTemplate
 {
 
-/* 
- * Component = Sub-Graph
- * 
- * Int = Smallest Cost in a Component
- * 
- * Smallest difference between any node from a component and another node in the second component
- * 
- * MInt(C1, C2) = min(Int(C1) + ThreshC1, Int(C2) + ThreshC2)
- * 
- * Thresh = K / (Number of Vertices in a component)
- * 
- * D = true: Sufficient evidence of a real boundary ->  keep regions separate.
- * D = false: Boundary not strong enough ->  regions may be merged.
- */
+    /*
+     * TASK 1: Documentation for analysis and code review
+     * TASK 2: intersect the 3 graphs correctly and find each node does it belong to the same component in all 3 graphs or not
+     * TASK 3: Output file containing the number of components and size of each.
+     * What is this ?
+     *   every region is colored with a distinct color and combined with the original picture so the detected regions are easy to see.
+     *   
+     * Test size images
+     * Small: 	   image size O(100’s KBs)
+     * Medium: image size O(10’s MBs)
+     * Large: 	   image size O(100’s MBs)
+
+     */
+
+    /* 
+     * Component = Sub-Graph
+     * 
+     * Int = Smallest Cost in a Component
+     * 
+     * Smallest difference between any node from a component and another node in the second component
+     * 
+     * MInt(C1, C2) = min(Int(C1) + ThreshC1, Int(C2) + ThreshC2)
+     * 
+     * Thresh = K / (Number of Vertices in a component)
+     * 
+     * D = true: Sufficient evidence of a real boundary ->  keep regions separate.
+     * D = false: Boundary not strong enough ->  regions may be merged.
+     */
 
     public class Node
     {
@@ -41,7 +55,9 @@ namespace ImageTemplate
 
     internal class Segmentation
     {
-        public static Node[,] GraphConstruct(RGBPixel[,] ImageMatrix, string color)
+
+        // Exact(N^2)
+        private static Node[,] GraphConstruct(RGBPixel[,] ImageMatrix, string color)
         {
             Node[,] graph = new Node[ImageMatrix.GetLength(0), ImageMatrix.GetLength(1)];
 
@@ -84,7 +100,9 @@ namespace ImageTemplate
             }
             return graph;
         }
-        public static DisjointSet ImageSegmentation(Node[,] graph)
+
+        // Exact(M)
+        private static DisjointSet ImageSegmentation(Node[,] graph)
         {
             List<KeyValuePair<int, KeyValuePair<Node, Node>>> nodes = new List<KeyValuePair<int, KeyValuePair<Node, Node>>>();
             for (int i = 0; i < graph.GetLength(0); i++)
@@ -105,13 +123,14 @@ namespace ImageTemplate
             nodes.Sort((a, b) => a.Key.CompareTo(b.Key));
 
             DisjointSet dsu = new DisjointSet(graph.GetLength(0) * graph.GetLength(1));
+            // Exact(M * log(M))
             foreach (KeyValuePair<int, KeyValuePair<Node, Node>> child in nodes)
             {
                 dsu.Union(child.Value.Key.id, child.Value.Value.id, child.Key);
             }
             return dsu;
         }
-        public static RGBPixel GetColorForSegment(int id)
+        private static RGBPixel GetColorForSegment(int id)
         {
             Random rand = new Random(id);
             return new RGBPixel
@@ -143,6 +162,8 @@ namespace ImageTemplate
             int height = imageMatrix.GetLength(0);
             int width = imageMatrix.GetLength(1);
 
+
+            // Exact(N^2)
             for (int i = 0; i < height; i++)
             {
                 for (int j = 0; j < width; j++)
@@ -161,6 +182,8 @@ namespace ImageTemplate
             }
         }
 
+
+        // Worst Case: Exact(N^2)
         private static void LogSegmentInfo(string color, DisjointSet segments)
         {
             Console.WriteLine($"{color} Segments: {segments.uniqueComponents.Count}");
