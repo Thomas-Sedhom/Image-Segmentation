@@ -53,6 +53,18 @@ namespace ImageTemplate
         }
     }
 
+    class SegmentInfo
+    {
+        public RGBPixel Color { get; set; }
+        public int Size { get; set; }
+
+        public SegmentInfo(RGBPixel color)
+        {
+            Color = color;
+            Size = 0;
+        }
+    }
+
     internal class Segmentation
     {
 
@@ -152,12 +164,12 @@ namespace ImageTemplate
             DisjointSet greenSegments = ImageSegmentation(graphGreen);
             DisjointSet blueSegments = ImageSegmentation(graphBlue);
 
-            LogSegmentInfo("Red", redSegments);
-            LogSegmentInfo("Green", greenSegments);
-            LogSegmentInfo("Blue", blueSegments);
+            //LogSegmentInfo("Red", redSegments);
+            //LogSegmentInfo("Green", greenSegments);
+            //LogSegmentInfo("Blue", blueSegments);
 
             // Intersect the 3 label maps
-            var segmentColorsMap = new Dictionary<(int, int, int), RGBPixel>();
+            var segmentColorsMap = new Dictionary<RGBPixelD, SegmentInfo>();
 
             int height = imageMatrix.GetLength(0);
             int width = imageMatrix.GetLength(1);
@@ -172,26 +184,38 @@ namespace ImageTemplate
                     int greenId = greenSegments.Find(graphGreen[i, j].id);
                     int blueId = blueSegments.Find(graphBlue[i, j].id);
 
-                    var combinedId = (redId, greenId, blueId);
+                    var combinedId = new RGBPixelD
+                    {
+                        red = redId,
+                        green = greenId,
+                        blue = blueId
+                    };
 
                     if (!segmentColorsMap.ContainsKey(combinedId))
-                        segmentColorsMap[combinedId] = GetColorForSegment(segmentColorsMap.Count);
+                        segmentColorsMap[combinedId] = new SegmentInfo(GetColorForSegment(segmentColorsMap.Count));
 
-                    imageMatrix[i, j] = segmentColorsMap[combinedId];
+                    imageMatrix[i, j] = segmentColorsMap[combinedId].Color;
+                    segmentColorsMap[combinedId].Size++;
                 }
             }
+
+            Console.WriteLine($"Segments Total: {segmentColorsMap.Count}");
+            segmentColorsMap = segmentColorsMap.OrderByDescending(x => x.Value.Size).ToDictionary(x => x.Key, x => x.Value);
+            foreach (var segment in segmentColorsMap)
+                Console.WriteLine($"Segment Size: {segment.Value.Size}");
+                //| Color: { segment.Key.red}, { segment.Key.green}, { segment.Key.blue}
         }
 
 
         // Worst Case: Exact(N^2)
-        private static void LogSegmentInfo(string color, DisjointSet segments)
-        {
-            Console.WriteLine($"{color} Segments: {segments.uniqueComponents.Count}");
-            foreach (var component in segments.uniqueComponents)
-            {
-                Console.WriteLine($"  Size: {segments.size[component]}");
-            }
-        }
+        //private static void LogSegmentInfo(string color, DisjointSet segments)
+        //{
+        //    Console.WriteLine($"{color} Segments: {segments.uniqueComponents.Count}");
+        //    foreach (var component in segments.uniqueComponents)
+        //    {
+        //        Console.WriteLine($"  Size: {segments.size[component]}");
+        //    }
+        //}
 
     }
     // bool isRedEqualGreen = (idRed == idGreen);

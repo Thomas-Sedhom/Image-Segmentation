@@ -19,8 +19,7 @@ namespace ImageTemplate
          * else do nothing.
          * 
          */
-        private readonly int K_CONSTANT = 500;
-
+        private readonly int K_CONSTANT = 30000;
         // DEBUGGING: Find how many components are found in the current state
         public HashSet<int> uniqueComponents;
 
