@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Security.Cryptography;
@@ -116,32 +117,38 @@ namespace ImageTemplate
         // Exact(M)
         private static DisjointSet ImageSegmentation(Node[,] graph)
         {
-            List<KeyValuePair<int, KeyValuePair<Node, Node>>> nodes = new List<KeyValuePair<int, KeyValuePair<Node, Node>>>();
+            List<List<KeyValuePair<Node, Node>>> freq = new List<List<KeyValuePair<Node, Node>>>(256);
+            for (int i = 0; i <= 255; i++)
+            {
+                freq.Add(new List<KeyValuePair<Node, Node>>());
+            }
+
             for (int i = 0; i < graph.GetLength(0); i++)
             {
                 for (int j = 0; j < graph.GetLength(1); j++)
                 {
                     foreach (KeyValuePair<Node, int> child in graph[i, j].children)
                     {
-                        nodes.Add(
-                            new KeyValuePair<int, KeyValuePair<Node, Node>>(
-                                child.Value,
-                                new KeyValuePair<Node, Node>(child.Key, graph[i, j])
-                            )
-                        );
+                        if (child.Value < 0 || child.Value > 255) // Optional: Validate weight range
+                            throw new ArgumentException("Edge weight out of range [0, 255]");
+                        KeyValuePair<Node, Node> val = new KeyValuePair<Node, Node>(child.Key, graph[i, j]);
+                        freq[child.Value].Add(val);
                     }
                 }
             }
-            nodes.Sort((a, b) => a.Key.CompareTo(b.Key));
 
             DisjointSet dsu = new DisjointSet(graph.GetLength(0) * graph.GetLength(1));
-            // Exact(M * log(M))
-            foreach (KeyValuePair<int, KeyValuePair<Node, Node>> child in nodes)
+            for (int i = 0; i <= 255; i++) 
             {
-                dsu.Union(child.Value.Key.id, child.Value.Value.id, child.Key);
+                foreach (var pairOfNodes in freq[i])
+                {
+                    dsu.Union(pairOfNodes.Key.id, pairOfNodes.Value.id, i);
+                }
             }
+
             return dsu;
         }
+
         private static RGBPixel GetColorForSegment(int id)
         {
             Random rand = new Random(id);
@@ -154,15 +161,22 @@ namespace ImageTemplate
         }
         public static void ImageProcess(ref RGBPixel[,] imageMatrix)
         {
-            // Graphs for each color
+            Stopwatch stopwatch = Stopwatch.StartNew();  
+
+
             Node[,] graphRed = GraphConstruct(imageMatrix, "red");
             Node[,] graphGreen = GraphConstruct(imageMatrix, "green");
             Node[,] graphBlue = GraphConstruct(imageMatrix, "blue");
 
-            // Segment the image for each color
+
             DisjointSet redSegments = ImageSegmentation(graphRed);
             DisjointSet greenSegments = ImageSegmentation(graphGreen);
             DisjointSet blueSegments = ImageSegmentation(graphBlue);
+
+            stopwatch.Stop(); 
+            
+            Console.WriteLine($"Segmentation completed in {stopwatch.ElapsedMilliseconds} ms.");
+
 
             //LogSegmentInfo("Red", redSegments);
             //LogSegmentInfo("Green", greenSegments);
@@ -199,10 +213,10 @@ namespace ImageTemplate
                 }
             }
 
-            Console.WriteLine($"Segments Total: {segmentColorsMap.Count}");
+            // Console.WriteLine($"Segments Total: {segmentColorsMap.Count}");
             segmentColorsMap = segmentColorsMap.OrderByDescending(x => x.Value.Size).ToDictionary(x => x.Key, x => x.Value);
-            foreach (var segment in segmentColorsMap)
-                Console.WriteLine($"Segment Size: {segment.Value.Size}");
+            // foreach (var segment in segmentColorsMap)
+            //     Console.WriteLine($"Segment Size: {segment.Value.Size}");
                 //| Color: { segment.Key.red}, { segment.Key.green}, { segment.Key.blue}
         }
 
