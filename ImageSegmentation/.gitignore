@@ -2,6 +2,8 @@
 bin/
 obj/
 
+TestCases/
+
 # User-specific files
 *.user
 *.suo

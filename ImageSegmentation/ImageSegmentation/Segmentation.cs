@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 
 namespace ImageTemplate
 {
@@ -41,7 +44,7 @@ namespace ImageTemplate
     {
         public int id;
         public int x, y;
-        public List<KeyValuePair<Node, int>> children;
+        public List<KeyValuePair<int, int>> children;
 
         public Node(int id, int x, int y)
         {
@@ -49,7 +52,7 @@ namespace ImageTemplate
             this.x = x;
             this.y = y;
 
-            children = new List<KeyValuePair<Node, int>>();
+            children = new List<KeyValuePair<int, int>>();
         }
     }
 
@@ -72,9 +75,11 @@ namespace ImageTemplate
         private static Node[,] GraphConstruct(RGBPixel[,] ImageMatrix, string color)
         {
             Node[,] graph = new Node[ImageMatrix.GetLength(0), ImageMatrix.GetLength(1)];
-
             int uuid = 0;
-            for (int i = 0; i < ImageMatrix.GetLength(0); i++)
+
+            //Parallel.For(0, ImageMatrix.GetLength(0), i =>
+            //{
+            for (int i = 0; i < graph.GetLength(0); i++)
             {
                 for (int j = 0; j < ImageMatrix.GetLength(1); j++)
                 {
@@ -85,7 +90,7 @@ namespace ImageTemplate
             int[] dx = { -1, -1, -1, 0, 0, 1, 1, 1 };
             int[] dy = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-            for (int i = 0; i < ImageMatrix.GetLength(0); i++)
+            Parallel.For(0, ImageMatrix.GetLength(0), i =>
             {
                 for (int j = 0; j < ImageMatrix.GetLength(1); j++)
                 {
@@ -105,30 +110,33 @@ namespace ImageTemplate
                                 weight = Math.Abs(ImageMatrix[i, j].blue - ImageMatrix[x, y].blue);
                             //if (weight > 0)
                             //    Console.WriteLine(" x: " + x + " y: " + y + "  i: " + i + " j: " + j + " weight " + weight);
-                            graph[i, j].children.Add(new KeyValuePair<Node, int>(graph[x, y], weight));
+                            graph[i, j].children.Add(new KeyValuePair<int, int>(graph[x, y].id, weight));
                         }
                     }
                 }
-            }
+            });
             return graph;
         }
 
         // Exact(M)
         private static DisjointSet ImageSegmentation(Node[,] graph)
         {
-            List<KeyValuePair<int, KeyValuePair<Node, Node>>> nodes = new List<KeyValuePair<int, KeyValuePair<Node, Node>>>();
+            List<KeyValuePair<int, KeyValuePair<int, int>>> nodes = new List<KeyValuePair<int, KeyValuePair<int, int>>>();
             for (int i = 0; i < graph.GetLength(0); i++)
             {
                 for (int j = 0; j < graph.GetLength(1); j++)
                 {
-                    foreach (KeyValuePair<Node, int> child in graph[i, j].children)
+                    foreach (KeyValuePair<int, int> child in graph[i, j].children)
                     {
-                        nodes.Add(
-                            new KeyValuePair<int, KeyValuePair<Node, Node>>(
+                        //if (child.Key > graph[i, j].id)
+                        {
+                            nodes.Add(
+                            new KeyValuePair<int, KeyValuePair<int, int>>(
                                 child.Value,
-                                new KeyValuePair<Node, Node>(child.Key, graph[i, j])
-                            )
-                        );
+                                new KeyValuePair<int, int>(child.Key, graph[i, j].id)
+                                )
+                            );
+                        }
                     }
                 }
             }
@@ -136,15 +144,15 @@ namespace ImageTemplate
 
             DisjointSet dsu = new DisjointSet(graph.GetLength(0) * graph.GetLength(1));
             // Exact(M * log(M))
-            foreach (KeyValuePair<int, KeyValuePair<Node, Node>> child in nodes)
+            foreach (KeyValuePair<int, KeyValuePair<int, int>> child in nodes)
             {
-                dsu.Union(child.Value.Key.id, child.Value.Value.id, child.Key);
+                dsu.Union(child.Value.Key, child.Value.Value, child.Key);
             }
             return dsu;
         }
-        private static RGBPixel GetColorForSegment(int id)
+
+        private static RGBPixel GetColorForSegment(Random rand)
         {
-            Random rand = new Random(id);
             return new RGBPixel
             {
                 red = (byte)rand.Next(256),
@@ -152,59 +160,236 @@ namespace ImageTemplate
                 blue = (byte)rand.Next(256)
             };
         }
-        public static void ImageProcess(ref RGBPixel[,] imageMatrix)
+
+        //private static RGBPixel GetColorForSegment(int id)
+        //{
+        //    double hue = (id * 137.508) % 360; // Golden angle approximation
+        //    return HSVtoRGB(hue, 1, 1);
+        //}
+
+        //private static RGBPixel HSVtoRGB(double h, double s, double v)
+        //{
+        //    double c = v * s;
+        //    double x = c * (1 - Math.Abs((h / 60 % 2) - 1));
+        //    double m = v - c;
+        //    double r = 0, g = 0, b = 0;
+
+        //    if (h < 60) { r = c; g = x; b = 0; }
+        //    else if (h < 120) { r = x; g = c; b = 0; }
+        //    else if (h < 180) { r = 0; g = c; b = x; }
+        //    else if (h < 240) { r = 0; g = x; b = c; }
+        //    else if (h < 300) { r = x; g = 0; b = c; }
+        //    else { r = c; g = 0; b = x; }
+
+        //    return new RGBPixel
+        //    {
+        //        red = (byte)((r + m) * 255),
+        //        green = (byte)((g + m) * 255),
+        //        blue = (byte)((b + m) * 255)
+        //    };
+        //}
+
+        private static async Task<List<Node[,]>> ConstructGraphs(RGBPixel[,] imageMatrix)
         {
-            // Graphs for each color
-            Node[,] graphRed = GraphConstruct(imageMatrix, "red");
-            Node[,] graphGreen = GraphConstruct(imageMatrix, "green");
-            Node[,] graphBlue = GraphConstruct(imageMatrix, "blue");
+            try
+            {
+                var t1 = Task.Run(() => GraphConstruct(imageMatrix, "red"));
+                var t2 = Task.Run(() => GraphConstruct(imageMatrix, "green"));
+                var t3 = Task.Run(() => GraphConstruct(imageMatrix, "blue"));
 
-            // Segment the image for each color
-            DisjointSet redSegments = ImageSegmentation(graphRed);
-            DisjointSet greenSegments = ImageSegmentation(graphGreen);
-            DisjointSet blueSegments = ImageSegmentation(graphBlue);
+                Node[][,] results = await Task.WhenAll(t1, t2, t3);
+                return results.ToList();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in ConstructGraphs: {ex.Message}");
+                throw;
+            }
+        }
 
-            //LogSegmentInfo("Red", redSegments);
-            //LogSegmentInfo("Green", greenSegments);
-            //LogSegmentInfo("Blue", blueSegments);
+        private static async Task<List<DisjointSet>> SegmentGraphs(Node[,] graphRed, Node[,] graphGreen, Node[,] graphBlue)
+        {
+            var tRed = Task.Run(() => ImageSegmentation(graphRed));
+            var tGreen = Task.Run(() => ImageSegmentation(graphGreen));
+            var tBlue = Task.Run(() => ImageSegmentation(graphBlue));
 
-            // Intersect the 3 label maps
-            var segmentColorsMap = new Dictionary<RGBPixelD, SegmentInfo>();
+            DisjointSet[] results = await Task.WhenAll(tRed, tGreen, tBlue);
+            return results.ToList();
+        }
+
+
+        public static async Task<RGBPixel[,]> ImageProcess(RGBPixel[,] imageMatrix)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            // Construct graphs for each of R, G, B channels
+            List<Node[,]> graphs = await ConstructGraphs(imageMatrix);
+            Node[,] graphRed = graphs[0];
+            Node[,] graphGreen = graphs[1];
+            Node[,] graphBlue = graphs[2];
+
+            // Segment the image for each channel
+            List<DisjointSet> segmentResults = await SegmentGraphs(graphRed, graphGreen, graphBlue);
+            DisjointSet redSegments = segmentResults[0];
+            DisjointSet greenSegments = segmentResults[1];
+            DisjointSet blueSegments = segmentResults[2];
 
             int height = imageMatrix.GetLength(0);
             int width = imageMatrix.GetLength(1);
 
+            // Build final intersection disjoint set based on 8-neighbor agreement
+            DisjointSet intersectionSegments = new DisjointSet(height * width);
+            int[] dx = { -1, -1, -1, 0, 0, 1, 1, 1 };
+            int[] dy = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-            // Exact(N^2)
+            Parallel.For(0, height, i =>
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    for (int k = 0; k < 8; k++)
+                    {
+                        int x = i + dx[k];
+                        int y = j + dy[k];
+
+                        if (x >= 0 && x < height && y >= 0 && y < width)
+                        {
+                            int currentIndex = i * width + j;
+                            int redId = redSegments.Find(graphRed[i, j].id);
+                            int greenId = greenSegments.Find(graphGreen[i, j].id);
+                            int blueId = blueSegments.Find(graphBlue[i, j].id);
+
+                            int neighborRedId = redSegments.Find(graphRed[x, y].id);
+                            int neighborGreenId = greenSegments.Find(graphGreen[x, y].id);
+                            int neighborBlueId = blueSegments.Find(graphBlue[x, y].id);
+
+                            if (redId == neighborRedId && greenId == neighborGreenId && blueId == neighborBlueId)
+                            {
+                                int neighborIndex = x * width + y;
+                                // Join them
+                                intersectionSegments.Union(currentIndex, neighborIndex, 0);
+                            }
+
+                        }
+                    }
+                }
+            });
+
+
+            Dictionary<int, SegmentInfo> segmentColorsMap = new Dictionary<int, SegmentInfo>();
+            Random rand = new Random();
             for (int i = 0; i < height; i++)
             {
                 for (int j = 0; j < width; j++)
                 {
-                    int redId = redSegments.Find(graphRed[i, j].id);
-                    int greenId = greenSegments.Find(graphGreen[i, j].id);
-                    int blueId = blueSegments.Find(graphBlue[i, j].id);
+                    int index = i * width + j;
+                    int segmentId = intersectionSegments.Find(index);
 
-                    var combinedId = new RGBPixelD
-                    {
-                        red = redId,
-                        green = greenId,
-                        blue = blueId
-                    };
+                    if (!segmentColorsMap.ContainsKey(segmentId))
+                        segmentColorsMap[segmentId] = new SegmentInfo(GetColorForSegment(rand));
 
-                    if (!segmentColorsMap.ContainsKey(combinedId))
-                        segmentColorsMap[combinedId] = new SegmentInfo(GetColorForSegment(segmentColorsMap.Count));
-
-                    imageMatrix[i, j] = segmentColorsMap[combinedId].Color;
-                    segmentColorsMap[combinedId].Size++;
+                    imageMatrix[i, j] = segmentColorsMap[segmentId].Color;
+                    segmentColorsMap[segmentId].Size++;
                 }
             }
 
-            Console.WriteLine($"Segments Total: {segmentColorsMap.Count}");
-            segmentColorsMap = segmentColorsMap.OrderByDescending(x => x.Value.Size).ToDictionary(x => x.Key, x => x.Value);
+            // Sort segments (optional)
+            segmentColorsMap = segmentColorsMap.OrderByDescending(x => x.Value.Size)
+                                               .ToDictionary(x => x.Key, x => x.Value);
+
+            stopwatch.Stop();
+            Debug.WriteLine($"Total Time: {stopwatch.ElapsedMilliseconds} ms");
+            Debug.WriteLine($"Segments Total: {segmentColorsMap.Count}");
             foreach (var segment in segmentColorsMap)
-                Console.WriteLine($"Segment Size: {segment.Value.Size}");
-                //| Color: { segment.Key.red}, { segment.Key.green}, { segment.Key.blue}
+                Debug.WriteLine($"Segment Size: {segment.Value.Size}");
+
+            return imageMatrix;
         }
+
+
+
+        //public static async Task<RGBPixel[,]> ImageProcess(RGBPixel[,] imageMatrix)
+        //{
+        //    Stopwatch stopwatch = new Stopwatch();
+        //    stopwatch.Start();
+
+        //    // CALL ConstructGraphs here and wait for it to excute to get all graph values and proceed with the rest of the imageProcess function
+        //    List<Node[,]> graphs = await ConstructGraphs(imageMatrix);
+        //    Node[,] graphRed = graphs[0];
+        //    Node[,] graphGreen = graphs[1];
+        //    Node[,] graphBlue = graphs[2];
+
+        //    //Node[,] graphRed = GraphConstruct(imageMatrix, "red");
+        //    //Node[,] graphGreen = GraphConstruct(imageMatrix, "green");
+        //    //Node[,] graphBlue = GraphConstruct(imageMatrix, "blue");
+
+
+        //    // Segment the image for each color
+        //    List<DisjointSet> segmentResults = await SegmentGraphs(graphRed, graphGreen, graphBlue);
+        //    //DisjointSet redSegments = ImageSegmentation(graphRed);
+        //    //DisjointSet greenSegments = ImageSegmentation(graphGreen);
+        //    //DisjointSet blueSegments = ImageSegmentation(graphBlue);
+
+        //    DisjointSet redSegments = segmentResults[0];
+        //    DisjointSet greenSegments = segmentResults[1];
+        //    DisjointSet blueSegments = segmentResults[2];
+
+        //    //LogSegmentInfo("Red", redSegments);
+        //    //LogSegmentInfo("Green", greenSegments);
+        //    //LogSegmentInfo("Blue", blueSegments);
+
+        //    // Intersect the 3 label maps
+        //    Random random = new Random();
+        //    var segmentColorsMap = new Dictionary<RGBPixelD, SegmentInfo>();
+
+        //    int height = imageMatrix.GetLength(0);
+        //    int width = imageMatrix.GetLength(1);
+
+        //    // Exact(N^2)
+        //    for (int i = 0; i < height; i++)
+        //    {
+        //        for (int j = 0; j < width; j++)
+        //        {
+        //            int redId = redSegments.Find(graphRed[i, j].id);
+        //            int greenId = greenSegments.Find(graphGreen[i, j].id);
+        //            int blueId = blueSegments.Find(graphBlue[i, j].id);
+
+        //            var combinedId = new RGBPixelD
+        //            {
+        //                red = redId,
+        //                green = greenId,
+        //                blue = blueId
+        //            };
+
+        //            if (!segmentColorsMap.ContainsKey(combinedId))
+        //                segmentColorsMap[combinedId] = new SegmentInfo(GetColorForSegment(segmentColorsMap.Count));
+
+        //            if (redId == greenId && greenId == blueId)
+        //            {
+        //                imageMatrix[i, j] = segmentColorsMap[combinedId].Color;
+        //            }
+        //            else
+        //            {
+        //                imageMatrix[i, j] = new RGBPixel
+        //                {
+        //                    red = (byte)random.Next(256),
+        //                    green = (byte)random.Next(256),
+        //                    blue = (byte)random.Next(256)
+        //                };
+        //            }
+        //            segmentColorsMap[combinedId].Size++;
+        //        }
+        //    }
+        //    segmentColorsMap = segmentColorsMap.OrderByDescending(x => x.Value.Size).ToDictionary(x => x.Key, x => x.Value);
+        //    stopwatch.Stop();
+        //    Debug.WriteLine($"Total Time: {stopwatch.ElapsedMilliseconds} ms");
+
+        //    Debug.WriteLine($"Segments Total: {segmentColorsMap.Count}");
+        //    foreach (var segment in segmentColorsMap)
+        //        Debug.WriteLine($"Segment Size: {segment.Value.Size} | Color: {segment.Key.red}, {segment.Key.green}, {segment.Key.blue}");
+
+        //    return imageMatrix;
+        //}
 
 
         // Worst Case: Exact(N^2)

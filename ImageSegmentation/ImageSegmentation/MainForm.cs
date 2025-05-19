@@ -11,9 +11,14 @@ namespace ImageTemplate
 {
     public partial class MainForm : Form
     {
+        public static MainForm Instance { get; private set; }
+
+        public string K_Constant_Value => K_Constant.Text;
+
         public MainForm()
         {
             InitializeComponent();
+            Instance = this;
         }
 
         RGBPixel[,] ImageMatrix;
@@ -32,7 +37,7 @@ namespace ImageTemplate
             txtHeight.Text = ImageOperations.GetHeight(ImageMatrix).ToString();
         }
 
-        private void btnGaussSmooth_Click(object sender, EventArgs e)
+        private async void btnGaussSmooth_Click(object sender, EventArgs e)
         {
             if (DoGaussianFilter.Checked)
             {
@@ -40,7 +45,8 @@ namespace ImageTemplate
                 int maskSize = (int)nudMaskSize.Value;
                 ImageMatrix = ImageOperations.GaussianFilter1D(ImageMatrix, maskSize, sigma);
             }
-            Segmentation.ImageProcess(ref ImageMatrix);
+            //ImageMatrix = await Segmentation.ImageProcess(ImageMatrix);
+            ImageMatrix = await Segmentation.ImageProcess(ImageMatrix);
             ImageOperations.DisplayImage(ImageMatrix, pictureBox2);
         }
 

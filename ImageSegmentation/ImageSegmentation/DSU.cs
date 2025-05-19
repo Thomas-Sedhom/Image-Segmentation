@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
 
 namespace ImageTemplate
 {
@@ -19,9 +21,9 @@ namespace ImageTemplate
          * else do nothing.
          * 
          */
-        private readonly int K_CONSTANT = 30000;
+        private readonly int K_CONSTANT = int.Parse(MainForm.Instance.K_Constant_Value);
         // DEBUGGING: Find how many components are found in the current state
-        public HashSet<int> uniqueComponents;
+        //public HashSet<int> uniqueComponents;
 
         // rank is incremented by 1 when Merging to state which component is dominant in upcoming merging.
         private int[] parent, rank;
@@ -35,35 +37,52 @@ namespace ImageTemplate
         public DisjointSet(int n)
         {
             parent = new int[n];
-            uniqueComponents = new HashSet<int>(n);
+            //uniqueComponents = new HashSet<int>(n);
 
             rank = new int[n];
 
             size = new int[n];
             InternalDifference = new int[n];
 
-            for (int i = 0; i < n; i++)
+            Parallel.For(0, n, i =>
             {
                 parent[i] = i;
-                uniqueComponents.Add(i);
+                //uniqueComponents.Add(i);
 
                 rank[i] = 1;
 
                 size[i] = 1;
                 InternalDifference[i] = 0;
-            }
+            });
         }
-           
+
 
         // O(log(M))
+        //public int Find(int i)
+        //{
+        //    if (parent[i] != i)
+        //    {
+        //        parent[i] = Find(parent[i]);
+        //    }
+        //    return parent[i];
+        //}
         public int Find(int i)
         {
-            if (parent[i] != i)
-            {
-                parent[i] = Find(parent[i]);
+            if (parent[i] == i) return i;  // Early exit for roots
+
+            int root = i;
+            while (parent[root] != root)
+                root = parent[root];
+
+            while (i != root)
+            {  // Full compression
+                int next = parent[i];
+                parent[i] = root;
+                i = next;
             }
-            return parent[i];
+            return root;
         }
+
         // O(log(M))
         public void Union(int x, int y, int weight)
         {
@@ -75,14 +94,14 @@ namespace ImageTemplate
                 if (rank[c1] < rank[c2])
                 {
                     parent[c1] = c2;
-                    uniqueComponents.Remove(c1);
+                    //uniqueComponents.Remove(c1);
                     newParent = c2;
                     size[c2] += size[c1];
                 }
                 else if (rank[c1] > rank[c2])
                 {
                     parent[c2] = c1;
-                    uniqueComponents.Remove(c2);
+                    //uniqueComponents.Remove(c2);
                     newParent = c1;
 
                     size[c1] += size[c2];
@@ -90,7 +109,7 @@ namespace ImageTemplate
                 else
                 {
                     parent[c2] = c1;
-                    uniqueComponents.Remove(c2);
+                    //uniqueComponents.Remove(c2);
                     newParent = c1;
 
                     rank[c1]++;
@@ -113,12 +132,9 @@ namespace ImageTemplate
             return true;
         }
 
-        private double GetMinDifference(int c1, int c2, int K)
+        private float GetMinDifference(int c1, int c2, int K)
         {
-            double T_c1 = K / size[c1];
-            double T_c2 = K / size[c2];
-            double minInt = Math.Min(InternalDifference[c1] + T_c1, InternalDifference[c2] + T_c2);
-            return minInt;
+            return Math.Min(InternalDifference[c1] + Convert.ToSingle(K / size[c1]), InternalDifference[c2] + Convert.ToSingle(K / size[c2]));
         }
 
 

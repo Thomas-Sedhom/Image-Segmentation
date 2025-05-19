@@ -46,6 +46,8 @@ namespace ImageTemplate
             this.panel2 = new System.Windows.Forms.Panel();
             this.DoGaussianFilter = new System.Windows.Forms.CheckBox();
             this.Gauss_Settings_Panel = new System.Windows.Forms.Panel();
+            this.K_Constant = new System.Windows.Forms.TextBox();
+            this.K_label = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaskSize)).BeginInit();
@@ -77,7 +79,7 @@ namespace ImageTemplate
             // btnOpen
             // 
             this.btnOpen.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnOpen.Location = new System.Drawing.Point(473, 513);
+            this.btnOpen.Location = new System.Drawing.Point(402, 511);
             this.btnOpen.Margin = new System.Windows.Forms.Padding(4);
             this.btnOpen.Name = "btnOpen";
             this.btnOpen.Size = new System.Drawing.Size(126, 89);
@@ -90,7 +92,7 @@ namespace ImageTemplate
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(217, 484);
+            this.label1.Location = new System.Drawing.Point(146, 482);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(162, 24);
@@ -111,7 +113,7 @@ namespace ImageTemplate
             // btnGaussSmooth
             // 
             this.btnGaussSmooth.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnGaussSmooth.Location = new System.Drawing.Point(628, 513);
+            this.btnGaussSmooth.Location = new System.Drawing.Point(557, 511);
             this.btnGaussSmooth.Margin = new System.Windows.Forms.Padding(4);
             this.btnGaussSmooth.Name = "btnGaussSmooth";
             this.btnGaussSmooth.Size = new System.Drawing.Size(131, 89);
@@ -145,7 +147,7 @@ namespace ImageTemplate
             // txtHeight
             // 
             this.txtHeight.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtHeight.Location = new System.Drawing.Point(375, 574);
+            this.txtHeight.Location = new System.Drawing.Point(304, 572);
             this.txtHeight.Margin = new System.Windows.Forms.Padding(4);
             this.txtHeight.Name = "txtHeight";
             this.txtHeight.ReadOnly = true;
@@ -184,7 +186,7 @@ namespace ImageTemplate
             // txtWidth
             // 
             this.txtWidth.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtWidth.Location = new System.Drawing.Point(375, 527);
+            this.txtWidth.Location = new System.Drawing.Point(304, 525);
             this.txtWidth.Margin = new System.Windows.Forms.Padding(4);
             this.txtWidth.Name = "txtWidth";
             this.txtWidth.ReadOnly = true;
@@ -195,7 +197,7 @@ namespace ImageTemplate
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(301, 530);
+            this.label5.Location = new System.Drawing.Point(230, 528);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(61, 21);
@@ -206,7 +208,7 @@ namespace ImageTemplate
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(301, 577);
+            this.label6.Location = new System.Drawing.Point(230, 575);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(67, 21);
@@ -249,7 +251,7 @@ namespace ImageTemplate
             // DoGaussianFilter
             // 
             this.DoGaussianFilter.AutoSize = true;
-            this.DoGaussianFilter.Location = new System.Drawing.Point(1031, 527);
+            this.DoGaussianFilter.Location = new System.Drawing.Point(960, 525);
             this.DoGaussianFilter.Name = "DoGaussianFilter";
             this.DoGaussianFilter.Size = new System.Drawing.Size(118, 20);
             this.DoGaussianFilter.TabIndex = 17;
@@ -264,17 +266,40 @@ namespace ImageTemplate
             this.Gauss_Settings_Panel.Controls.Add(this.label4);
             this.Gauss_Settings_Panel.Controls.Add(this.label3);
             this.Gauss_Settings_Panel.Controls.Add(this.label2);
-            this.Gauss_Settings_Panel.Location = new System.Drawing.Point(772, 480);
+            this.Gauss_Settings_Panel.Location = new System.Drawing.Point(701, 478);
             this.Gauss_Settings_Panel.Name = "Gauss_Settings_Panel";
             this.Gauss_Settings_Panel.Size = new System.Drawing.Size(234, 132);
             this.Gauss_Settings_Panel.TabIndex = 18;
+            // 
+            // K_Constant
+            // 
+            this.K_Constant.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.K_Constant.Location = new System.Drawing.Point(1081, 575);
+            this.K_Constant.Margin = new System.Windows.Forms.Padding(4);
+            this.K_Constant.Name = "K_Constant";
+            this.K_Constant.Size = new System.Drawing.Size(75, 27);
+            this.K_Constant.TabIndex = 16;
+            this.K_Constant.Text = "1";
+            // 
+            // K_label
+            // 
+            this.K_label.AutoSize = true;
+            this.K_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.K_label.Location = new System.Drawing.Point(956, 578);
+            this.K_label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.K_label.Name = "K_label";
+            this.K_label.Size = new System.Drawing.Size(104, 21);
+            this.K_label.TabIndex = 15;
+            this.K_label.Text = "K Constant";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1205, 615);
+            this.Controls.Add(this.K_Constant);
             this.Controls.Add(this.Gauss_Settings_Panel);
+            this.Controls.Add(this.K_label);
             this.Controls.Add(this.DoGaussianFilter);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
@@ -323,6 +348,8 @@ namespace ImageTemplate
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.CheckBox DoGaussianFilter;
         private System.Windows.Forms.Panel Gauss_Settings_Panel;
+        private System.Windows.Forms.Label K_label;
+        public System.Windows.Forms.TextBox K_Constant;
     }
 }
 
