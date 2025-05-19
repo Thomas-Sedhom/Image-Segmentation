@@ -148,6 +148,7 @@ namespace ImageTemplate
             {
                 dsu.Union(child.Value.Key, child.Value.Value, child.Key);
             }
+
             return dsu;
         }
 
