@@ -140,19 +140,16 @@ namespace ImageTemplate
         {
             int[] count = new int[maxWeight + 1];
 
-            // Step 1: Count frequencies
             foreach (var edge in edges)
             {
                 count[edge.Weight]++;
             }
 
-            // Step 2: Compute prefix sums to know starting index for each weight
             for (int i = 1; i <= maxWeight; i++)
             {
                 count[i] += count[i - 1];
             }
 
-            // Step 3: Place items into correct positions (stable sort)
             Edge[] output = new Edge[edges.Count];
             for (int i = edges.Count - 1; i >= 0; i--)
             {
@@ -161,7 +158,6 @@ namespace ImageTemplate
                 output[pos] = edge;
             }
 
-            // Step 4: Copy sorted data back to original list
             for (int i = 0; i < edges.Count; i++)
             {
                 edges[i] = output[i];
@@ -222,9 +218,8 @@ namespace ImageTemplate
             {
                 var tRed = Task.Run(() => ImageSegmentation(graphs[0]));
                 var tGreen = Task.Run(() => ImageSegmentation(graphs[1]));
-                var tBlue = Task.Run(() => ImageSegmentation(graphs[2]));
 
-                DisjointSet[] results = await Task.WhenAll(tRed, tGreen, tBlue);
+                DisjointSet[] results = await Task.WhenAll(tRed, tGreen);
                 return results;
             }
             catch (Exception ex)
@@ -256,12 +251,12 @@ namespace ImageTemplate
             // Segment the image for each channel
             DisjointSet[] segmentResults = await SegmentGraphs(graphs);
 
+            DisjointSet redSegments = segmentResults[0];
+            DisjointSet greenSegments = segmentResults[1];
+            DisjointSet blueSegments = ImageSegmentation(graphs[2]);
             segmentGraphStopwatch.Stop();
             Debug.WriteLine($"Time of graph segmentation: {segmentGraphStopwatch.ElapsedMilliseconds} ms");
 
-            DisjointSet redSegments = segmentResults[0];
-            DisjointSet greenSegments = segmentResults[1];
-            DisjointSet blueSegments = segmentResults[2];
 
             segmentResults = null;
             GC.Collect();
@@ -308,6 +303,7 @@ namespace ImageTemplate
             });
             redSegments = greenSegments = blueSegments = null;
             GC.Collect();
+
             Stopwatch dictStopwatch = new Stopwatch();
             dictStopwatch.Start();
 
