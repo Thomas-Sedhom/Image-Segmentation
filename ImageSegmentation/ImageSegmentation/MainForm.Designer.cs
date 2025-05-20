@@ -48,6 +48,8 @@ namespace ImageTemplate
             this.Gauss_Settings_Panel = new System.Windows.Forms.Panel();
             this.K_Constant = new System.Windows.Forms.TextBox();
             this.K_label = new System.Windows.Forms.Label();
+            this.Merge = new System.Windows.Forms.Button();
+            this.SaveImage = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaskSize)).BeginInit();
@@ -58,31 +60,34 @@ namespace ImageTemplate
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(4, 4);
+            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(427, 360);
+            this.pictureBox1.Size = new System.Drawing.Size(579, 452);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(4, 4);
+            this.pictureBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBox2.Location = new System.Drawing.Point(0, 0);
             this.pictureBox2.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(412, 360);
+            this.pictureBox2.Size = new System.Drawing.Size(556, 452);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBox2.TabIndex = 1;
             this.pictureBox2.TabStop = false;
+            this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
             // 
             // btnOpen
             // 
             this.btnOpen.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnOpen.Location = new System.Drawing.Point(402, 511);
+            this.btnOpen.Location = new System.Drawing.Point(189, 525);
             this.btnOpen.Margin = new System.Windows.Forms.Padding(4);
             this.btnOpen.Name = "btnOpen";
-            this.btnOpen.Size = new System.Drawing.Size(126, 89);
+            this.btnOpen.Size = new System.Drawing.Size(167, 78);
             this.btnOpen.TabIndex = 2;
             this.btnOpen.Text = "Open Image";
             this.btnOpen.UseVisualStyleBackColor = true;
@@ -92,7 +97,7 @@ namespace ImageTemplate
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(146, 482);
+            this.label1.Location = new System.Drawing.Point(14, 482);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(162, 24);
@@ -102,8 +107,9 @@ namespace ImageTemplate
             // label2
             // 
             this.label2.AutoSize = true;
+            this.label2.Dock = System.Windows.Forms.DockStyle.Top;
             this.label2.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(35, 4);
+            this.label2.Location = new System.Drawing.Point(0, 0);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(184, 24);
@@ -113,12 +119,12 @@ namespace ImageTemplate
             // btnGaussSmooth
             // 
             this.btnGaussSmooth.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnGaussSmooth.Location = new System.Drawing.Point(557, 511);
+            this.btnGaussSmooth.Location = new System.Drawing.Point(364, 525);
             this.btnGaussSmooth.Margin = new System.Windows.Forms.Padding(4);
             this.btnGaussSmooth.Name = "btnGaussSmooth";
-            this.btnGaussSmooth.Size = new System.Drawing.Size(131, 89);
+            this.btnGaussSmooth.Size = new System.Drawing.Size(233, 77);
             this.btnGaussSmooth.TabIndex = 5;
-            this.btnGaussSmooth.Text = "Apply Operation (Example)";
+            this.btnGaussSmooth.Text = "Apply Operation";
             this.btnGaussSmooth.UseVisualStyleBackColor = true;
             this.btnGaussSmooth.Click += new System.EventHandler(this.btnGaussSmooth_Click);
             // 
@@ -126,7 +132,7 @@ namespace ImageTemplate
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(16, 49);
+            this.label3.Location = new System.Drawing.Point(4, 47);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(94, 21);
@@ -137,7 +143,7 @@ namespace ImageTemplate
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(16, 97);
+            this.label4.Location = new System.Drawing.Point(4, 94);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(120, 21);
@@ -147,7 +153,7 @@ namespace ImageTemplate
             // txtHeight
             // 
             this.txtHeight.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtHeight.Location = new System.Drawing.Point(304, 572);
+            this.txtHeight.Location = new System.Drawing.Point(88, 575);
             this.txtHeight.Margin = new System.Windows.Forms.Padding(4);
             this.txtHeight.Name = "txtHeight";
             this.txtHeight.ReadOnly = true;
@@ -162,7 +168,7 @@ namespace ImageTemplate
             0,
             0,
             0});
-            this.nudMaskSize.Location = new System.Drawing.Point(141, 47);
+            this.nudMaskSize.Location = new System.Drawing.Point(154, 47);
             this.nudMaskSize.Margin = new System.Windows.Forms.Padding(4);
             this.nudMaskSize.Maximum = new decimal(new int[] {
             99,
@@ -186,7 +192,7 @@ namespace ImageTemplate
             // txtWidth
             // 
             this.txtWidth.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtWidth.Location = new System.Drawing.Point(304, 525);
+            this.txtWidth.Location = new System.Drawing.Point(88, 528);
             this.txtWidth.Margin = new System.Windows.Forms.Padding(4);
             this.txtWidth.Name = "txtWidth";
             this.txtWidth.ReadOnly = true;
@@ -197,7 +203,7 @@ namespace ImageTemplate
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(230, 528);
+            this.label5.Location = new System.Drawing.Point(14, 531);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(61, 21);
@@ -208,7 +214,7 @@ namespace ImageTemplate
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(230, 575);
+            this.label6.Location = new System.Drawing.Point(14, 578);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(67, 21);
@@ -218,7 +224,7 @@ namespace ImageTemplate
             // txtGaussSigma
             // 
             this.txtGaussSigma.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtGaussSigma.Location = new System.Drawing.Point(141, 94);
+            this.txtGaussSigma.Location = new System.Drawing.Point(154, 91);
             this.txtGaussSigma.Margin = new System.Windows.Forms.Padding(4);
             this.txtGaussSigma.Name = "txtGaussSigma";
             this.txtGaussSigma.Size = new System.Drawing.Size(75, 27);
@@ -251,7 +257,7 @@ namespace ImageTemplate
             // DoGaussianFilter
             // 
             this.DoGaussianFilter.AutoSize = true;
-            this.DoGaussianFilter.Location = new System.Drawing.Point(960, 525);
+            this.DoGaussianFilter.Location = new System.Drawing.Point(881, 478);
             this.DoGaussianFilter.Name = "DoGaussianFilter";
             this.DoGaussianFilter.Size = new System.Drawing.Size(118, 20);
             this.DoGaussianFilter.TabIndex = 17;
@@ -266,37 +272,63 @@ namespace ImageTemplate
             this.Gauss_Settings_Panel.Controls.Add(this.label4);
             this.Gauss_Settings_Panel.Controls.Add(this.label3);
             this.Gauss_Settings_Panel.Controls.Add(this.label2);
-            this.Gauss_Settings_Panel.Location = new System.Drawing.Point(701, 478);
+            this.Gauss_Settings_Panel.Location = new System.Drawing.Point(630, 478);
             this.Gauss_Settings_Panel.Name = "Gauss_Settings_Panel";
-            this.Gauss_Settings_Panel.Size = new System.Drawing.Size(234, 132);
+            this.Gauss_Settings_Panel.Size = new System.Drawing.Size(231, 125);
             this.Gauss_Settings_Panel.TabIndex = 18;
             // 
             // K_Constant
             // 
             this.K_Constant.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.K_Constant.Location = new System.Drawing.Point(1081, 575);
+            this.K_Constant.Location = new System.Drawing.Point(522, 482);
             this.K_Constant.Margin = new System.Windows.Forms.Padding(4);
             this.K_Constant.Name = "K_Constant";
             this.K_Constant.Size = new System.Drawing.Size(75, 27);
             this.K_Constant.TabIndex = 16;
-            this.K_Constant.Text = "1";
+            this.K_Constant.Text = "30000";
             // 
             // K_label
             // 
             this.K_label.AutoSize = true;
             this.K_label.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.K_label.Location = new System.Drawing.Point(956, 578);
+            this.K_label.Location = new System.Drawing.Point(410, 482);
             this.K_label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.K_label.Name = "K_label";
             this.K_label.Size = new System.Drawing.Size(104, 21);
             this.K_label.TabIndex = 15;
             this.K_label.Text = "K Constant";
             // 
+            // Merge
+            // 
+            this.Merge.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Merge.Location = new System.Drawing.Point(881, 525);
+            this.Merge.Margin = new System.Windows.Forms.Padding(4);
+            this.Merge.Name = "Merge";
+            this.Merge.Size = new System.Drawing.Size(188, 74);
+            this.Merge.TabIndex = 19;
+            this.Merge.Text = "Merge Selected Parts";
+            this.Merge.UseVisualStyleBackColor = true;
+            this.Merge.Click += new System.EventHandler(this.Merge_Click);
+            // 
+            // SaveImage
+            // 
+            this.SaveImage.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SaveImage.Location = new System.Drawing.Point(1079, 525);
+            this.SaveImage.Margin = new System.Windows.Forms.Padding(4);
+            this.SaveImage.Name = "SaveImage";
+            this.SaveImage.Size = new System.Drawing.Size(109, 74);
+            this.SaveImage.TabIndex = 20;
+            this.SaveImage.Text = "Save";
+            this.SaveImage.UseVisualStyleBackColor = true;
+            this.SaveImage.Click += new System.EventHandler(this.SaveImage_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1205, 615);
+            this.Controls.Add(this.SaveImage);
+            this.Controls.Add(this.Merge);
             this.Controls.Add(this.K_Constant);
             this.Controls.Add(this.Gauss_Settings_Panel);
             this.Controls.Add(this.K_label);
@@ -350,6 +382,8 @@ namespace ImageTemplate
         private System.Windows.Forms.Panel Gauss_Settings_Panel;
         private System.Windows.Forms.Label K_label;
         public System.Windows.Forms.TextBox K_Constant;
+        private System.Windows.Forms.Button Merge;
+        private System.Windows.Forms.Button SaveImage;
     }
 }
 

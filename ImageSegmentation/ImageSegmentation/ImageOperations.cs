@@ -30,6 +30,7 @@ namespace ImageTemplate
     /// </summary>
     public class ImageOperations
     {
+
         /// <summary>
         /// Open an image and load it into 2D array of colors (size: Height x Width)
         /// </summary>

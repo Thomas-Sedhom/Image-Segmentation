@@ -21,7 +21,7 @@ namespace ImageTemplate
          * else do nothing.
          * 
          */
-        private readonly int K_CONSTANT = int.Parse(MainForm.Instance.K_Constant_Value);
+        private readonly ushort K_CONSTANT = ushort.Parse(MainForm.Instance.K_Constant_Value);
         // DEBUGGING: Find how many components are found in the current state
         //public HashSet<int> uniqueComponents;
 
@@ -31,7 +31,7 @@ namespace ImageTemplate
         // Size of each component
         public int[] size;
         // Storing the max internal difference of each component
-        private int[] InternalDifference;
+        private ushort[] InternalDifference;
 
 
         public DisjointSet(int n)
@@ -42,7 +42,7 @@ namespace ImageTemplate
             rank = new int[n];
 
             size = new int[n];
-            InternalDifference = new int[n];
+            InternalDifference = new ushort[n];
 
             Parallel.For(0, n, i =>
             {
@@ -55,7 +55,6 @@ namespace ImageTemplate
                 InternalDifference[i] = 0;
             });
         }
-
 
         // O(log(M))
         //public int Find(int i)
@@ -116,7 +115,7 @@ namespace ImageTemplate
                     size[c1] += size[c2];
                 }
 
-                InternalDifference[newParent] = Math.Max(
+                InternalDifference[newParent] = (ushort)Math.Max(
                     weight,
                     Math.Max(InternalDifference[c1], InternalDifference[c2])
                 );
@@ -132,7 +131,7 @@ namespace ImageTemplate
             return true;
         }
 
-        private float GetMinDifference(int c1, int c2, int K)
+        private float GetMinDifference(int c1, int c2, ushort K)
         {
             return Math.Min(InternalDifference[c1] + Convert.ToSingle(K / size[c1]), InternalDifference[c2] + Convert.ToSingle(K / size[c2]));
         }
