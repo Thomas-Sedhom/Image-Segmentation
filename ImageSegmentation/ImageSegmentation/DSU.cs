@@ -65,6 +65,9 @@ namespace ImageTemplate
         //    }
         //    return parent[i];
         //}
+
+        //0,1,2,3,4,5,6,7,8,9
+        //2,3,8,6,5,7,8,8,9,9
         public int Find(int i)
         {
             if (parent[i] == i) return i;  // Early exit for roots
@@ -74,7 +77,7 @@ namespace ImageTemplate
                 root = parent[root];
 
             while (i != root)
-            {  // Full compression
+            {
                 int next = parent[i];
                 parent[i] = root;
                 i = next;
@@ -87,6 +90,12 @@ namespace ImageTemplate
         {
             int c1 = Find(x);
             int c2 = Find(y);
+            //2,8
+            //200, 500
+            // tot size = 700
+            // rank = 2,4
+            // sec one wins
+            // make it parent
             if (c1 != c2 && CanUnion(c1, c2, weight))
             {
                 int newParent;
@@ -120,7 +129,7 @@ namespace ImageTemplate
                     Math.Max(InternalDifference[c1], InternalDifference[c2])
                 );
 
-                // Console.WriteLine($"Merged: {c1} & {c2} → Parent: {newParent} | Size: {size[newParent]} | InternalDiff: {InternalDifference[newParent]}");
+                // Console.WriteLine($"Merged: {c1} & {c2} -> Parent: {newParent} | Size: {size[newParent]} | InternalDiff: {InternalDifference[newParent]}");
             }
         }
 

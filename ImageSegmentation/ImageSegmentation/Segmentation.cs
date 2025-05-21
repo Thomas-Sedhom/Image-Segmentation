@@ -43,6 +43,8 @@ namespace ImageTemplate
      * D = false: Boundary not strong enough ->  regions may be merged.
      */
 
+    /* undirected, weighted, sparse, connected graph until it gets segmented */
+
     //public class Node
     //{
     //    public int id;
@@ -165,8 +167,6 @@ namespace ImageTemplate
         }
 
 
-
-
         // O(M log M), where M is the number of edges that is = width * height * 8
         private static DisjointSet ImageSegmentation(List<Edge> edges)
         {
@@ -229,8 +229,6 @@ namespace ImageTemplate
             }
 
         }
-
-
 
         public static async Task<RGBPixel[,]> ImageProcess(RGBPixel[,] imageMatrix)
         {
