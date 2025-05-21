@@ -54,7 +54,6 @@ namespace ImageTemplate
                 int maskSize = (int)nudMaskSize.Value;
                 ImageMatrix = ImageOperations.GaussianFilter1D(ImageMatrix, maskSize, sigma);
             }
-            //ImageMatrix = await Segmentation.ImageProcess(ImageMatrix);
             ImageMatrix = await Segmentation.ImageProcess(ImageMatrix);
             ImageOperations.DisplayImage(ImageMatrix, pictureBox2);
         }
@@ -101,12 +100,10 @@ namespace ImageTemplate
         {
             if (e is MouseEventArgs me)
             {
-                // Directly use the click coordinates (no scaling needed)
                 Point coordinates = me.Location;
 
                 if (pictureBox2.Image != null)
                 {
-                    // Verify click is within image bounds
                     if (coordinates.X < pictureBox2.Image.Width &&
                         coordinates.Y < pictureBox2.Image.Height)
                     {
@@ -114,21 +111,15 @@ namespace ImageTemplate
 
                         Color pixelColor = bmp.GetPixel(coordinates.X, coordinates.Y);
 
-                        MessageBox.Show($"Color at ({coordinates.X},{coordinates.Y}):\n" +
-                                      $"R: {pixelColor.R} G: {pixelColor.G} B: {pixelColor.B}",
+                        MessageBox.Show($"Color at ({coordinates.X},{coordinates.Y}): R: {pixelColor.R} G: {pixelColor.G} B: {pixelColor.B}",
                                       "Region Selected",
                                       MessageBoxButtons.OK,
                                       MessageBoxIcon.Information);
 
                         if (seg1 == -1)
-                        {
-
                             seg1 = coordinates.Y * ImageMatrix.GetLength(1) + coordinates.X;
-                        }
                         else if (seg2 == -1)
-                        {
                             seg2 = coordinates.Y * ImageMatrix.GetLength(1) + coordinates.X;
-                        }
 
                     }
                     else

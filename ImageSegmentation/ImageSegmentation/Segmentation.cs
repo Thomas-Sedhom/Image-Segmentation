@@ -350,11 +350,10 @@ namespace ImageTemplate
                 }
                 using (StreamWriter writer = new StreamWriter(filePath))
                 {
-                    writer.WriteLine($"{segmentColorsMap.Count}");
+                    writer.WriteLine(segmentColorsMap.Count);
 
                     foreach (var segment in segmentColorsMap)
-                        writer.WriteLine($"{segment.Value.Size}");
-                    //Segment ID: { segment.Key}, Size:
+                        writer.WriteLine(segment.Value.Size);
                 }
 
                 Debug.WriteLine("Segment info successfully written to file.");
