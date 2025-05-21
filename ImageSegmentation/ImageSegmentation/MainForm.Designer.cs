@@ -50,6 +50,8 @@ namespace ImageTemplate
             this.K_label = new System.Windows.Forms.Label();
             this.Merge = new System.Windows.Forms.Button();
             this.SaveImage = new System.Windows.Forms.Button();
+            this.numOfSelectedRegions = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaskSize)).BeginInit();
@@ -71,7 +73,6 @@ namespace ImageTemplate
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox2.Location = new System.Drawing.Point(0, 0);
             this.pictureBox2.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox2.Name = "pictureBox2";
@@ -322,11 +323,35 @@ namespace ImageTemplate
             this.SaveImage.UseVisualStyleBackColor = true;
             this.SaveImage.Click += new System.EventHandler(this.SaveImage_Click);
             // 
+            // numOfSelectedRegions
+            // 
+            this.numOfSelectedRegions.AutoSize = true;
+            this.numOfSelectedRegions.Font = new System.Drawing.Font("Microsoft Tai Le", 10.2F, System.Drawing.FontStyle.Bold);
+            this.numOfSelectedRegions.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            this.numOfSelectedRegions.Location = new System.Drawing.Point(878, 501);
+            this.numOfSelectedRegions.Name = "numOfSelectedRegions";
+            this.numOfSelectedRegions.Size = new System.Drawing.Size(30, 22);
+            this.numOfSelectedRegions.TabIndex = 2;
+            this.numOfSelectedRegions.Text = "10";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Microsoft Tai Le", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            this.label7.Location = new System.Drawing.Point(908, 501);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(146, 22);
+            this.label7.TabIndex = 21;
+            this.label7.Text = "Selected Regions";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1205, 615);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.numOfSelectedRegions);
             this.Controls.Add(this.SaveImage);
             this.Controls.Add(this.Merge);
             this.Controls.Add(this.K_Constant);
@@ -384,6 +409,8 @@ namespace ImageTemplate
         public System.Windows.Forms.TextBox K_Constant;
         private System.Windows.Forms.Button Merge;
         private System.Windows.Forms.Button SaveImage;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label numOfSelectedRegions;
     }
 }
 

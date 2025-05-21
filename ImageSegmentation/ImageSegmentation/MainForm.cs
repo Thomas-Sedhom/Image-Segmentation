@@ -16,13 +16,14 @@ namespace ImageTemplate
 
         public string K_Constant_Value => K_Constant.Text;
 
-        int seg1 = -1;
-        int seg2 = -1;
+        List<int> selectedSegments = new List<int>();
 
         public MainForm()
         {
             InitializeComponent();
             Instance = this;
+            label7.Hide();
+            numOfSelectedRegions.Text = "";
         }
 
         RGBPixel[,] ImageMatrix;
@@ -42,6 +43,7 @@ namespace ImageTemplate
                 ImageMatrix = ImageOperations.OpenImage(OpenedFilePath);
                 ImageOperations.DisplayImage(ImageMatrix, pictureBox1);
             }
+            if (ImageMatrix == null) return;
             txtWidth.Text = ImageOperations.GetWidth(ImageMatrix).ToString();
             txtHeight.Text = ImageOperations.GetHeight(ImageMatrix).ToString();
         }
@@ -89,15 +91,24 @@ namespace ImageTemplate
 
         private void Merge_Click(object sender, EventArgs e)
         {
-            if (seg1 == -1 || seg2 == -1) return;
+            label7.Hide();
+            numOfSelectedRegions.Hide();
 
-            Segmentation.MergeTwoSegments(ref ImageMatrix, seg1, seg2);
-            seg1 = seg2 = -1;
+            if (selectedSegments.Count < 2)
+            {
+                MessageBox.Show("Select at least two regions to merge.");
+                return;
+            }
+
+            Segmentation.MergeMultipleSegments(ref ImageMatrix, selectedSegments);
+            selectedSegments.Clear();
             ImageOperations.DisplayImage(ImageMatrix, pictureBox2);
         }
 
+
         private void pictureBox2_Click(object sender, EventArgs e)
         {
+
             if (e is MouseEventArgs me)
             {
                 Point coordinates = me.Location;
@@ -107,20 +118,16 @@ namespace ImageTemplate
                     if (coordinates.X < pictureBox2.Image.Width &&
                         coordinates.Y < pictureBox2.Image.Height)
                     {
-                        Bitmap bmp = (Bitmap)pictureBox2.Image;
+                        int pixelId = coordinates.Y * ImageMatrix.GetLength(1) + coordinates.X;
 
-                        Color pixelColor = bmp.GetPixel(coordinates.X, coordinates.Y);
+                        if (!selectedSegments.Contains(pixelId))
+                        {
+                            selectedSegments.Add(pixelId);
 
-                        MessageBox.Show($"Color at ({coordinates.X},{coordinates.Y}): R: {pixelColor.R} G: {pixelColor.G} B: {pixelColor.B}",
-                                      "Region Selected",
-                                      MessageBoxButtons.OK,
-                                      MessageBoxIcon.Information);
-
-                        if (seg1 == -1)
-                            seg1 = coordinates.Y * ImageMatrix.GetLength(1) + coordinates.X;
-                        else if (seg2 == -1)
-                            seg2 = coordinates.Y * ImageMatrix.GetLength(1) + coordinates.X;
-
+                            Color pixelColor = ((Bitmap)pictureBox2.Image).GetPixel(coordinates.X, coordinates.Y);
+                            MessageBox.Show($"Selected Region at ({coordinates.X},{coordinates.Y}) with Color: R: {pixelColor.R}, G: {pixelColor.G}, B: {pixelColor.B}",
+                                            "Region Selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                     }
                     else
                     {
@@ -128,7 +135,12 @@ namespace ImageTemplate
                     }
                 }
             }
+            label7.Show();
+            numOfSelectedRegions.Show();
+            numOfSelectedRegions.Text = selectedSegments.Count.ToString();
+            numOfSelectedRegions.Refresh();
         }
+
 
         private void SaveImage_Click(object sender, EventArgs e)
         {

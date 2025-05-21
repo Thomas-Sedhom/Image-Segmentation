@@ -364,39 +364,53 @@ namespace ImageTemplate
             }
         }
 
-        public static void MergeTwoSegments(ref RGBPixel[,] imageMatrix, int seg1, int seg2)
+        public static void MergeMultipleSegments(ref RGBPixel[,] imageMatrix, List<int> selectedPixelIds)
         {
-            if (seg1 == seg2 || seg1 == -1 || seg2 == -1)
-            {
-                MessageBox.Show("Please select two different regions to merge.", "Malfunction", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                return;
-            }
             if (imageMatrix == null || segmentColorsMap == null)
             {
-                MessageBox.Show("Open an Image and Segment it first.", "Malfunction", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show("open an image and segment it first", "Malfunction", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
 
-            int r1 = intersectionSegments.Find(seg1);
-            int r2 = intersectionSegments.Find(seg2);
-            if (r1 == r2)
+            if (selectedPixelIds == null || selectedPixelIds.Count < 2)
             {
-                MessageBox.Show("Select two difference regions", "Malfunction", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show("Select at least two different regions to merge.", "Malfunction", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
-            SegmentInfo segInfo1 = segmentColorsMap[r1];
-            SegmentInfo segInfo2 = segmentColorsMap[r2];
 
-            if (segmentColorsMap.ContainsKey(r2))
-                segmentColorsMap.Remove(r2);
+            HashSet<int> roots = new HashSet<int>();
 
-            intersectionSegments.Union(r1, r2, 0);
+            foreach (int pixelId in selectedPixelIds)
+            {
+                int root = intersectionSegments.Find(pixelId);
+                roots.Add(root);
+            }
 
-            int totalSize = segInfo1.Size + segInfo2.Size;
-            int newRoot = intersectionSegments.Find(seg1);
+            if (roots.Count < 2)
+            {
+                MessageBox.Show("all selected pixels belong to the same region", "Merge Malfunction", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
 
-            segmentColorsMap[newRoot] = new SegmentInfo(segInfo1.Color, totalSize);
+            var rootList = roots.ToList();
+            int targetRoot = rootList[0];
 
+            int totalSize = 0;
+            RGBPixel targetColor = segmentColorsMap[targetRoot].Color;
+
+            foreach (int r in rootList)
+            {
+                if (r != targetRoot)
+                {
+                    intersectionSegments.Union(targetRoot, r, 0);
+                    if (segmentColorsMap.ContainsKey(r))
+                        segmentColorsMap.Remove(r);
+                }
+                totalSize += segmentColorsMap.ContainsKey(r) ? segmentColorsMap[r].Size : 0;
+            }
+
+            int newRoot = intersectionSegments.Find(targetRoot);
+            segmentColorsMap[newRoot] = new SegmentInfo(targetColor, totalSize);
 
             for (int i = 0; i < width; i++)
             {
@@ -405,12 +419,14 @@ namespace ImageTemplate
                     int pixelId = i * height + j;
                     if (intersectionSegments.Find(pixelId) == newRoot)
                     {
-                        imageMatrix[i, j] = segmentColorsMap[newRoot].Color;
+                        imageMatrix[i, j] = targetColor;
                     }
                 }
             }
-            Console.WriteLine($"Merged segments {seg1} and {seg2} into segment {r1}");
+
+            Console.WriteLine($"Merged segments: {string.Join(", ", rootList)} into root segment {newRoot}");
         }
+
 
         //private static void LogSegmentInfo(string color, DisjointSet segments)
         //{
